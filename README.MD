@@ -19,7 +19,7 @@ Then call `fr.epardaud.reactivecontexts.core.Context.load();` and your contexts 
 following optional plugins:
 
 artifactId | Description
---- | --- | ---
+--- | ---
 `reactivecontexts-propagators-rxjava1 | Propagates contexts for RxJava1
 `reactivecontexts-propagators-rxjava2 | Propagates contexts for RxJava2
 `reactivecontexts-providers-redpipe | Propagates Redpipe contexts
