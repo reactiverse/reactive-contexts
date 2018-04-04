@@ -1,4 +1,4 @@
-package fr.epardaud.reactivecontexts.redpipe;
+package fr.epardaud.reactivecontexts.providers.redpipe;
 
 import fr.epardaud.reactivecontexts.core.ContextProvider;
 import net.redpipe.engine.core.AppGlobals;

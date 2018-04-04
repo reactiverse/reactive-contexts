@@ -1,4 +1,4 @@
-package fr.epardaud.reactivecontexts.resteasy;
+package fr.epardaud.reactivecontexts.providers.resteasy;
 
 import java.util.Map;
 

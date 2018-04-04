@@ -7,8 +7,8 @@
 		<artifactId>reactivecontexts-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>reactivecontexts-propagators-rxjava2</artifactId>
-	<name>reactivecontexts-propagators-rxjava2</name>
+	<artifactId>reactivecontexts-providers-cdi</artifactId>
+	<name>reactivecontexts-providers-cdi</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,20 +17,20 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>fr.epardaud.reactivecontexts</groupId>
-			<artifactId>reactivecontexts-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>fr.epardaud.reactivecontexts</groupId>
+            <artifactId>reactivecontexts-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 		<dependency>
-			<groupId>io.reactivex.rxjava2</groupId>
-			<artifactId>rxjava</artifactId>
-			<version>2.1.12</version>
+			<groupId>org.jboss.weld.se</groupId>
+			<artifactId>weld-se-core</artifactId>
+			<version>2.4.7.Final</version>
 		</dependency>
-
 	</dependencies>
 </project>

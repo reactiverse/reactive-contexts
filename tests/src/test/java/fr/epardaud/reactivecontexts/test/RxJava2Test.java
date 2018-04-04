@@ -1,7 +1,6 @@
 package fr.epardaud.reactivecontexts.test;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
@@ -23,6 +22,7 @@ public class RxJava2Test {
 	@BeforeClass
 	public static void init() {
 		// seed
+		ResteasyProviderFactory.clearContextData();
 		ResteasyProviderFactory.pushContext(String.class, "test");
 		AppGlobals.set(new AppGlobals());
 		AppGlobals.get().setGlobal(String.class, "test");

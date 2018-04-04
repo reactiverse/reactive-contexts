@@ -15,6 +15,7 @@ public class Context {
 	static {
 		for (ContextProvider<?> listener : ServiceLoader.load(ContextProvider.class)) {
 			providers.add(listener);
+			System.err.println("Context provider: "+listener);
 		}
 		for (ContextPropagator propagator : ServiceLoader.load(ContextPropagator.class)) {
 			propagators.add(propagator);
