@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>reactivecontexts-providers-cdi</name>
+	<name>reactivecontexts-providers-weld</name>
 	<comment></comment>
 	<projects>
 	</projects>

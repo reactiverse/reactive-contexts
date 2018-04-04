@@ -1,4 +1,4 @@
-package fr.epardaud.reactivecontexts.providers.cdi;
+package fr.epardaud.reactivecontexts.providers.weld;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +14,7 @@ import org.jboss.weld.context.bound.BoundRequestContext;
 
 import fr.epardaud.reactivecontexts.core.ContextProvider;
 
-public class CDIContextProvider implements ContextProvider<Map<String,Object>> {
+public class WeldContextProvider implements ContextProvider<Map<String,Object>> {
 
 	private static Method getBeanStore;
 	private static Field mapBeanStoreDelegate;

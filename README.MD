@@ -1,6 +1,6 @@
 # ReactiveContexts
 
-ReactiveContexts is a library that allows you to capture contexts from various providers (Resteasy, Redpipe)
+ReactiveContexts is a library that allows you to capture contexts from various providers (Resteasy, Redpipe, Weld)
 and propagate them along the reactive flow of various propagators (RxJava1, RxJava2).
 
 # Usage
@@ -24,3 +24,4 @@ artifactId | Description
 `reactivecontexts-propagators-rxjava2 | Propagates contexts for RxJava2
 `reactivecontexts-providers-redpipe | Propagates Redpipe contexts
 `reactivecontexts-providers-resteasy | Propagates Resteasy contexts
+`reactivecontexts-providers-weld | Propagates Weld contexts

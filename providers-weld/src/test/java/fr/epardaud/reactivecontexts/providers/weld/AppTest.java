@@ -1,4 +1,4 @@
-package fr.epardaud.reactivecontexts.providers.cdi;
+package fr.epardaud.reactivecontexts.providers.weld;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
