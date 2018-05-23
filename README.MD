@@ -5,14 +5,17 @@ and propagate them along the reactive flow of various propagators (RxJava1, RxJa
 
 # Usage
 
+Note: at the moment, you have to clone and install ReactiveContexts locally, because it hasn't yet been pushed to
+Maven Central.
+
 Import the following Maven module:
 
 ```xml
-        <dependency>
-            <groupId>fr.epardaud.reactivecontexts</groupId>
-            <artifactId>reactivecontexts-core</artifactId>
-            <version>0.0.1</version>
-        </dependency>
+<dependency>
+    <groupId>fr.epardaud.reactivecontexts</groupId>
+    <artifactId>reactivecontexts-core</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
 ```
 
 Then call `fr.epardaud.reactivecontexts.core.Context.load();` and your contexts will be propagated, depending on the
@@ -25,6 +28,14 @@ artifactId | Description
 `reactivecontexts-providers-redpipe | Propagates Redpipe contexts
 `reactivecontexts-providers-resteasy | Propagates Resteasy contexts
 `reactivecontexts-providers-weld | Propagates Weld contexts
+
+# Building
+
+Clone this repository, and run:
+
+```shell
+$ mvn clean install
+```
 
 # For context providers
 
