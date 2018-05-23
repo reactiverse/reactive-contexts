@@ -23,11 +23,11 @@ presence of the following optional plugins in your classpath:
 
 artifactId | Description
 --- | ---
-`reactivecontexts-propagators-rxjava1 | Propagates contexts for RxJava1
-`reactivecontexts-propagators-rxjava2 | Propagates contexts for RxJava2
-`reactivecontexts-providers-redpipe | Propagates Redpipe contexts
-`reactivecontexts-providers-resteasy | Propagates Resteasy contexts
-`reactivecontexts-providers-weld | Propagates Weld contexts
+`reactivecontexts-propagators-rxjava1` | Propagates contexts for RxJava1
+`reactivecontexts-propagators-rxjava2` | Propagates contexts for RxJava2
+`reactivecontexts-providers-redpipe` | Propagates Redpipe contexts
+`reactivecontexts-providers-resteasy` | Propagates Resteasy contexts
+`reactivecontexts-providers-weld` | Propagates Weld contexts
 
 # Building
 
