@@ -36,7 +36,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>reactivecontexts-providers-cdi</artifactId>
+            <artifactId>reactivecontexts-providers-weld</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
