@@ -26,9 +26,6 @@
 		<module>core</module>
 		<module>propagators-rxjava1</module>
 		<module>propagators-rxjava2</module>
-		<module>providers-resteasy</module>
-		<module>providers-redpipe</module>
-		<module>providers-weld</module>
 		<module>tests</module>
 	</modules>
 </project>

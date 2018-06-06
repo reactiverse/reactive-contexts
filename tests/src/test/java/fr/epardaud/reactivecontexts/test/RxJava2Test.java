@@ -2,8 +2,9 @@ package fr.epardaud.reactivecontexts.test;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -15,20 +16,24 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import net.redpipe.engine.core.AppGlobals;
 
 public class RxJava2Test {
 
 	@BeforeClass
 	public static void init() {
-		// seed
-		ResteasyProviderFactory.clearContextData();
-		ResteasyProviderFactory.pushContext(String.class, "test");
-		AppGlobals.set(new AppGlobals());
-		AppGlobals.get().setGlobal(String.class, "test");
-
 		// initialise
 		Context.load();
+	}
+	
+	@Before
+	public void before() {
+		MyContext.init();
+		MyContext.get().set("test");
+	}
+	
+	@After
+	public void after() {
+		MyContext.clear();
 	}
 	
 	@Test
@@ -165,7 +170,6 @@ public class RxJava2Test {
 	}
 
 	private void checkContextCaptured() {
-		Assert.assertEquals("test", ResteasyProviderFactory.getContextData(String.class));
-		Assert.assertEquals("test", AppGlobals.get().getGlobal(String.class));
+		Assert.assertEquals("test", MyContext.get().getReqId());
 	}
 }
