@@ -29,6 +29,11 @@ artifactId | Description
 `reactivecontexts-providers-resteasy` | Propagates Resteasy contexts
 `reactivecontexts-providers-weld` | Propagates Weld contexts
 
+If you are using RxJava 1 or 2, you don't need anything to propagate your contexts: every RxJava type (`Single`,
+`Flowable`…) will have the right contexts automatically propagated. If you are using reactive types that don't
+have a `reactivecontexts-propagator` plugin, such as `CompletionStage` in the JDK, see [below for how to manually
+propagate contexts](#manual-context-propagation) 
+
 # Building
 
 Clone this repository, and run:
