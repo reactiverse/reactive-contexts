@@ -1,5 +1,7 @@
 # ReactiveContexts
 
+image:https://travis-ci.com/FroMage/reactivecontexts.svg?branch=master["Build Status",link="https://travis-ci.com/FroMage/reactivecontexts"]
+
 ReactiveContexts is a library that allows you to capture contexts from various providers (Resteasy, Redpipe, Weld)
 and propagate them along the reactive flow of various propagators (RxJava1, RxJava2).
 
