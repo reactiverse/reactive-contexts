@@ -1,0 +1,7 @@
+language: java
+notifications:
+  email:
+    recipients:
+      - stef@epardaud.fr
+    on_success: always
+    on_failure: always
