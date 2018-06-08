@@ -1,6 +1,6 @@
 # ReactiveContexts
 
-[![Build Status](https://travis-ci.com/FroMage/reactivecontexts.svg?branch=master)](https://travis-ci.com/FroMage/reactivecontexts)
+[![Build Status](https://travis-ci.com/reactiverse/reactivecontexts.svg?branch=master)](https://travis-ci.com/reactiverse/reactivecontexts)
 
 ReactiveContexts is a library that allows you to capture contexts from various providers (Resteasy, Redpipe, Weld)
 and propagate them along the reactive flow of various propagators (RxJava1, RxJava2).
@@ -14,13 +14,13 @@ Import the following Maven module:
 
 ```xml
 <dependency>
-    <groupId>fr.epardaud.reactivecontexts</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>reactivecontexts-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
-Then call `fr.epardaud.reactivecontexts.core.Context.load();` and your contexts will be propagated, depending on the
+Then call `io.reactiverse.reactivecontexts.core.Context.load();` and your contexts will be propagated, depending on the
 presence of the following optional plugins in your classpath:
 
 artifactId | Description
@@ -51,7 +51,7 @@ variables, it's very likely it won't work with reactive applications that regist
 invoke them later in various threads.
 
 In order for your library to have its context propagated to all supported reactive libraries, you
-can implement the `fr.epardaud.reactivecontexts.core.ContextProvider` interface and specify how
+can implement the `io.reactiverse.reactivecontexts.core.ContextProvider` interface and specify how
 you can save and restore your context:
 
 ```java
@@ -78,7 +78,7 @@ public class MyContextProvider implements ContextProvider<MyState> {
 }
 ```
 
-Then you declare a `META-INF/services/fr.epardaud.reactivecontexts.core.ContextProvider` file which
+Then you declare a `META-INF/services/io.reactiverse.reactivecontexts.core.ContextProvider` file which
 lists your fully-qualified class name implementing the `ContextProvider` interface (in this case
 `my.library.MyContextProvider`) and include it in your classpath.
 
@@ -105,7 +105,7 @@ public class RxJava1ContextPropagator implements ContextPropagator {
 ```
 
 Don't forget to list your context propagator's fully-qualified class names in the
-`META-INF/services/fr.epardaud.reactivecontexts.core.ContextPropagator` file, and to include it in
+`META-INF/services/io.reactiverse.reactivecontexts.core.ContextPropagator` file, and to include it in
 your classpath.
 
 Your plugin can capture all current contexts with `Context.capture()`, then install captured contexts with
