@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.reactiverse</groupId>
-    <artifactId>reactivecontexts-parent</artifactId>
+    <artifactId>reactive-contexts-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>reactivecontexts-core</artifactId>
-  <name>reactivecontexts-core</name>
+  <artifactId>reactive-contexts-core</artifactId>
+  <name>reactive-contexts-core</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

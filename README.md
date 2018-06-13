@@ -1,13 +1,13 @@
-# ReactiveContexts
+# Reactive Contexts
 
-[![Build Status](https://travis-ci.com/reactiverse/reactivecontexts.svg?branch=master)](https://travis-ci.com/reactiverse/reactivecontexts)
+[![Build Status](https://travis-ci.com/reactiverse/reactive-contexts.svg?branch=master)](https://travis-ci.com/reactiverse/reactive-contexts)
 
 ReactiveContexts is a library that allows you to capture contexts from various providers (Resteasy, Redpipe, Weld)
 and propagate them along the reactive flow of various propagators (RxJava1, RxJava2).
 
 # Usage
 
-Note: at the moment, you have to clone and install ReactiveContexts locally, because it hasn't yet been pushed to
+Note: at the moment, you have to clone and install Reactive Contexts locally, because it hasn't yet been pushed to
 Maven Central.
 
 Import the following Maven module:
@@ -15,7 +15,7 @@ Import the following Maven module:
 ```xml
 <dependency>
     <groupId>io.reactiverse</groupId>
-    <artifactId>reactivecontexts-core</artifactId>
+    <artifactId>reactive-contexts-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
@@ -25,15 +25,15 @@ presence of the following optional plugins in your classpath:
 
 artifactId | Description
 --- | ---
-`reactivecontexts-propagators-rxjava1` | Propagates contexts for RxJava1
-`reactivecontexts-propagators-rxjava2` | Propagates contexts for RxJava2
-`reactivecontexts-providers-redpipe` | Propagates Redpipe contexts
-`reactivecontexts-providers-resteasy` | Propagates Resteasy contexts
-`reactivecontexts-providers-weld` | Propagates Weld contexts
+`reactive-contexts-propagators-rxjava1` | Propagates contexts for RxJava1
+`reactive-contexts-propagators-rxjava2` | Propagates contexts for RxJava2
+`reactive-contexts-providers-redpipe` | Propagates Redpipe contexts
+`reactive-contexts-providers-resteasy` | Propagates Resteasy contexts
+`reactive-contexts-providers-weld` | Propagates Weld contexts
 
 If you are using RxJava 1 or 2, you don't need anything to propagate your contexts: every RxJava type (`Single`,
 `Flowable`…) will have the right contexts automatically propagated. If you are using reactive types that don't
-have a `reactivecontexts-propagator` plugin, such as `CompletionStage` in the JDK, see [below for how to manually
+have a `reactive-contexts-propagator` plugin, such as `CompletionStage` in the JDK, see [below for how to manually
 propagate contexts](#manual-context-propagation) 
 
 # Building
@@ -88,7 +88,7 @@ context will be propagated to all supported reactive libraries.
 # For context propagators
 
 If you have a reactive library that supports scheduling of callbacks on various threads, you will need
-to register a `ContextPropagator` implementation that will be called by the `reactivecontexts` library,
+to register a `ContextPropagator` implementation that will be called by the `reactive-contexts` library,
 where you will register any required plumbing on the reactive library, to make sure it will properly
 propagate all contexts during scheduling.
 

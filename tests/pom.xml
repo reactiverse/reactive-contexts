@@ -4,13 +4,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.reactiverse</groupId>
-		<artifactId>reactivecontexts-parent</artifactId>
+		<artifactId>reactive-contexts-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>reactivecontexts-test</artifactId>
-	<name>reactivecontexts-test</name>
+	<artifactId>reactive-contexts-test</artifactId>
+	<name>reactive-contexts-test</name>
 	<url>http://maven.apache.org</url>
 	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
@@ -20,22 +21,22 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>reactivecontexts-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>reactive-contexts-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>reactivecontexts-propagators-rxjava1</artifactId>
+			<artifactId>reactive-contexts-propagators-rxjava1</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>reactivecontexts-propagators-rxjava2</artifactId>
+			<artifactId>reactive-contexts-propagators-rxjava2</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
