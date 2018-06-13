@@ -23,6 +23,7 @@
  * contexts will be automatically propagated and your code will look great. If not, add support for your 
  * {@link ContextProvider} or {@link ContextPropagator}. If it's not possible, you can still use manual context
  * propagation by accessing directly the {@link Context} API.
+ * </p>
  *
  * @author Stéphane Épardaud <stef@epardaud.fr>
  */

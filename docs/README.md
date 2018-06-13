@@ -2,8 +2,78 @@
 
 [![Build Status](https://travis-ci.com/reactiverse/reactive-contexts.svg?branch=master)](https://travis-ci.com/reactiverse/reactive-contexts)
 
-ReactiveContexts is a library that allows you to capture contexts from various providers (Resteasy, Redpipe, Weld)
-and propagate them along the reactive flow of various propagators (RxJava1, RxJava2).
+Reactive Contexts is a library that allows you to capture contexts from various providers ([RESTEasy](https://resteasy.github.io), 
+[Redpipe](http://redpipe.net), [Weld](http://weld.cdi-spec.org))
+and propagate them along the reactive flow of various propagators ([RxJava1, RxJava2](https://github.com/ReactiveX/RxJava)).
+
+# The problem with contexts and reactive libraries
+
+Many libraries (for example: RESTEasy, [CDI](http://cdi-spec.org)) use a thread-local context that holds information required by user-executing
+code (in the case of RESTEasy: the current request, response and many other useful information so that the resource 
+method can look them up when executed).
+
+This works well in settings where you have one thread per operation, but stops working if the operation spawns other 
+threads, or gets executed in other threads, or simply later, as is the case in many Reactive libraries, such as RxJava,
+where users code is spread between the subscriber, operations such as filter/map, and producers, all of which can be
+executed in different thread schedulers.
+
+For example, the following RESTEasy/RxJava code works out of the box with the latest version of RESTEasy:
+
+    @GET
+    @Path("reactive-nodelay")
+    public Single<String> reactiveNoDelay(@Context UriInfo uriInfo){
+        return Single.just("hello")
+                .map(str -> str + " from: "+uriInfo.getAbsolutePath());
+    }
+
+And will display something like `hello from: http://localhost:8081/reactive-nodelay`.
+
+But if you introduce a delay, which is only one of the many ways to introduce a thread-switch from RxJava:
+
+    @GET
+    @Path("reactive-delay")
+    public Single<String> reactiveDelay(@Context UriInfo uriInfo){
+        return Single.just("hello")
+                .delay(1, TimeUnit.SECONDS)
+                .map(str -> str + " from: "+uriInfo.getAbsolutePath());
+    }
+
+Then it breaks down with `RESTEASY003880: Unable to find contextual data of type: javax.ws.rs.core.UriInfo`.
+
+This is due to the fact that RESTEasy doesn't know that RxJava is going to schedule the delayed `map` operation
+into a different scheduler, on a thread which doesn't have the RESTEasy context set-up in a thread-local.
+
+This is not RESTEasy's fault: the exact same error will happen if you try to use CDI at that point, for the exact
+same reason. Many existing libraries rely on thread-locals for context propagation, and it does not work in the
+async/Reactive world.
+
+RxJava supports a system of hooks/plugins that we can use to capture and restore context, but there can only be
+one such hook/plugin, so if RESTEasy uses it, CDI cannot use it. Also, there would be a lot of code duplication
+as propagating contexts with RxJava hooks/plugins is not trivial.
+
+# The solution
+
+In order to enable automatic context propagation of any number of contexts, Reactive Context uses a system of plugins
+for saving/restoring contexts: `ContextProvider`, and plugins that hook into Reactive libraries/schedulers in
+order to use the `Context` API for saving/restoring all contexts: `ContextPropagator`.
+
+If your context-using framework is supported, and your Reactive library/scheduler is supported too, then all your
+contexts will be automatically propagated and your code will look great. If not, add support for your 
+`ContextProvider` or `ContextPropagator`. If it's not possible, you can still use manual context
+propagation by accessing directly the `Context` API.
+
+To get back to our original problematic code:
+
+    @GET
+    @Path("reactive-delay")
+    public Single<String> reactiveDelay(@Context UriInfo uriInfo){
+        return Single.just("hello")
+                .delay(1, TimeUnit.SECONDS)
+                .map(str -> str + " from: "+uriInfo.getAbsolutePath());
+    }
+
+Will work fine if you use the RESTEasy `ContextProvider` with the RxJava2 `ContextPropagator`, without any change
+in your code. Automatic context propagation FTW!
 
 # Usage
 
@@ -28,7 +98,7 @@ artifactId | Description
 `reactive-contexts-propagators-rxjava1` | Propagates contexts for RxJava1
 `reactive-contexts-propagators-rxjava2` | Propagates contexts for RxJava2
 `reactive-contexts-providers-redpipe` | Propagates Redpipe contexts
-`reactive-contexts-providers-resteasy` | Propagates Resteasy contexts
+`reactive-contexts-providers-resteasy` | Propagates RESTEasy contexts
 `reactive-contexts-providers-weld` | Propagates Weld contexts
 
 If you are using RxJava 1 or 2, you don't need anything to propagate your contexts: every RxJava type (`Single`,
