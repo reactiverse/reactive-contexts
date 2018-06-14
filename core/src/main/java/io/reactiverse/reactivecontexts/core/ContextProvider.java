@@ -22,7 +22,7 @@ package io.reactiverse.reactivecontexts.core;
  * of fully-qualified type names of each of your implementations of {@link ContextProvider} (one per line).
  * </p>
  *
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author Stéphane Épardaud
  * @see Context
  */
 public interface ContextProvider<State> {
@@ -36,7 +36,7 @@ public interface ContextProvider<State> {
 	
 	/**
 	 * Called by {@link Context#restore(Object[])} to install your previously-captured state.
-	 * @param state your context state, as previously captured by {@link #capture()} or {@link #install(Object)}.
+	 * @param previousState your context state, as previously captured by {@link #capture()} or {@link #install(Object)}.
 	 */
 	public void restore(State previousState);
 

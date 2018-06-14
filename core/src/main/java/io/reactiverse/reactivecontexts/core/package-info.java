@@ -25,7 +25,7 @@
  * propagation by accessing directly the {@link Context} API.
  * </p>
  *
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author Stéphane Épardaud
  */
 package io.reactiverse.reactivecontexts.core;
 

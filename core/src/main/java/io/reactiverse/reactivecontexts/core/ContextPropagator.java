@@ -19,7 +19,7 @@ package io.reactiverse.reactivecontexts.core;
  * of fully-qualified type names of each of your implementations of {@link ContextPropagator} (one per line).
  * </p>
  *
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author Stéphane Épardaud
  * @see Context
  */
 public interface ContextPropagator {

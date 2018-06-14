@@ -12,7 +12,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Reactive Context propagator for RxJava 1. Supports propagating context to all {@link Single},
  * {@link Observable}, {@link Completable}, {@link Flowable} and {@link Maybe} types.
  *
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author Stéphane Épardaud
  */
 public class RxJava2ContextPropagator implements ContextPropagator {
 

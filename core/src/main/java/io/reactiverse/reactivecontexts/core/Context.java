@@ -27,7 +27,7 @@ import java.util.ServiceLoader;
  * }
  *  </code></pre>
  *
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author Stéphane Épardaud
  */
 public class Context {
 	
@@ -64,6 +64,7 @@ public class Context {
 	/**
 	 * Installs a set of contexts previously captured with {@link #capture()} to all
 	 * currently registered {@link ContextProvider} plugins.
+	 * @param states the set of contexts previously captured with {@link #capture()}
 	 * @return the (current/before installation) storage required for all currently registered contexts.
 	 * @see #capture()
 	 * @see #restore(Object[])

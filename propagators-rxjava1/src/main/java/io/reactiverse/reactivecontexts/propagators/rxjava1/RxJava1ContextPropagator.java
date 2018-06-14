@@ -10,7 +10,7 @@ import rx.plugins.RxJavaHooks;
  * Reactive Context propagator for RxJava 1. Supports propagating context to all {@link Single},
  * {@link Observable} and {@link Completable} types.
  *
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author Stéphane Épardaud
  */
 public class RxJava1ContextPropagator implements ContextPropagator {
 
