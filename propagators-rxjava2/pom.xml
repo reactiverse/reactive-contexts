@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.reactiverse</groupId>
 		<artifactId>reactive-contexts-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.2</version>
 	</parent>
 	<artifactId>reactive-contexts-propagators-rxjava2</artifactId>
 	<name>reactive-contexts-propagators-rxjava2</name>
