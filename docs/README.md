@@ -6,6 +6,10 @@ Reactive Contexts is a library that allows you to capture contexts from various 
 [Redpipe](http://redpipe.net), [Weld](http://weld.cdi-spec.org))
 and propagate them along the reactive flow of various propagators ([RxJava1, RxJava2](https://github.com/ReactiveX/RxJava)).
 
+# License
+
+Reactive Contexts is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) terms.
+
 # The problem with contexts and reactive libraries
 
 Many libraries (for example: RESTEasy, [CDI](http://cdi-spec.org)) use a thread-local context that holds information required by user-executing
