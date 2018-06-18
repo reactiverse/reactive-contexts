@@ -90,7 +90,7 @@ Import the following Maven module:
 <dependency>
     <groupId>io.reactiverse</groupId>
     <artifactId>reactive-contexts-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
