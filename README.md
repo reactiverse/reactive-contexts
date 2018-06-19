@@ -274,3 +274,10 @@ userResponse.thenAccept(response -> {
     }
 });
 ```
+
+Alternately, you can use `Context.wrap` to propagate reactive contexts to many functional interfaces, for example:
+
+```java
+CompletionStage<Response> userResponse = Context.wrap(invokeUserAction());
+userResponse.thenAccept(response -> writeResponse(response));
+```

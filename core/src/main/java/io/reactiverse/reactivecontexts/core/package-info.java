@@ -15,14 +15,18 @@
  * </p>
  * <p>
  * In order to enable automatic context propagation of any number of contexts, Reactive Context uses a system of plugins
- * for saving/restoring contexts: {@link ContextProvider}, and plugins that hook into Reactive libraries/schedulers in
- * order to use the {@link Context} API for saving/restoring all contexts: {@link ContextPropagator}.
+ * for saving/restoring contexts: {@link io.reactiverse.reactivecontexts.core.ContextProvider}, and plugins that 
+ * hook into Reactive libraries/schedulers in
+ * order to use the {@link io.reactiverse.reactivecontexts.core.Context} API for saving/restoring all contexts: 
+ * {@link io.reactiverse.reactivecontexts.core.ContextPropagator}.
  * </p>
  * <p>
  * If your context-using framework is supported, and your Reactive library/scheduler is supported too, then all your
  * contexts will be automatically propagated and your code will look great. If not, add support for your 
- * {@link ContextProvider} or {@link ContextPropagator}. If it's not possible, you can still use manual context
- * propagation by accessing directly the {@link Context} API.
+ * {@link io.reactiverse.reactivecontexts.core.ContextProvider} or {@link io.reactiverse.reactivecontexts.core.ContextPropagator}. 
+ * If it's not possible, you can still use manual context
+ * propagation by accessing directly the {@link io.reactiverse.reactivecontexts.core.Context} API or by wrapping any reactive
+ * type with the many {@link Context#wrap(Runnable)} functions.
  * </p>
  *
  * @author Stéphane Épardaud

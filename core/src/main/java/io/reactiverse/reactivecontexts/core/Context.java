@@ -3,6 +3,12 @@ package io.reactiverse.reactivecontexts.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -26,7 +32,15 @@ import java.util.ServiceLoader;
  *     Context.restore(contexts);
  * }
  *  </code></pre>
- *
+ * * <p>
+ * Or you can use one of the many {@link #wrap(Runnable)} methods for wrapping reactive types:
+ * </p>
+ * 
+ *  <pre><code>
+ *  Runnable runnableWithContext = Context.wrap(() -> ...your context-requiring code...);
+ *  CompletionStage&lt;String&gt; completionStageWithContext = Context.wrap(originalCompletionStage);
+ *  </code></pre>
+
  * @author Stéphane Épardaud
  */
 public class Context {
@@ -93,7 +107,144 @@ public class Context {
 		}
 	}
 
+	/**
+	 * Initialises the list of registered {@link ContextProvider} and {@link ContextPropagator}
+	 * if they are not already initialised. Otherwise, has no effect.
+	 */
 	public static void load() {
 		// does not do anything, but triggers the static block load
+	}
+	
+	/**
+	 * Wraps a {@link Runnable} so that its {@link Runnable#run()} method will
+	 * be called with the current reactive context.
+	 * @param f the {@link Runnable} to wrap
+	 * @return a {@link Runnable} which will have its reactive context set to the current context.
+	 */
+	public static Runnable wrap(Runnable f) {
+		return wrap(capture(), f);
+	}
+	
+	static Runnable wrap(Object[] state, Runnable f) {
+		return () -> {
+			Object[] oldState = install(state);
+			try {
+				f.run();
+			}finally {
+				restore(oldState);
+			}
+		};
+	}
+
+	/**
+	 * Wraps a {@link Consumer} so that its {@link Consumer#accept(Object)} method will
+	 * be called with the current reactive context.
+	 * @param f the {@link Consumer} to wrap
+	 * @return a {@link Consumer} which will have its reactive context set to the current context.
+	 */
+	public static <T> Consumer<T> wrap(Consumer<T> f) {
+		return wrap(capture(), f);
+	}
+	
+	static <T> Consumer<T> wrap(Object[] state, Consumer<T> f) {
+		return v -> {
+			Object[] oldState = install(state);
+			try {
+				f.accept(v);
+			}finally {
+				restore(oldState);
+			}
+		};
+	}
+
+	/**
+	 * Wraps a {@link BiConsumer} so that its {@link BiConsumer#accept(Object, Object)} method will
+	 * be called with the current reactive context.
+	 * @param f the {@link BiConsumer} to wrap
+	 * @return a {@link BiConsumer} which will have its reactive context set to the current context.
+	 */
+	public static <T,U> BiConsumer<T,U> wrap(BiConsumer<T, U> f) {
+		return wrap(capture(), f);
+	}
+	
+	static <T, U> BiConsumer<T, U> wrap(Object[] state, BiConsumer<T, U> f) {
+		return (t, u) -> {
+			Object[] oldState = install(state);
+			try {
+				f.accept(t, u);
+			}finally {
+				restore(oldState);
+			}
+		};
+	}
+
+	/**
+	 * Wraps a {@link BiFunction} so that its {@link BiFunction#apply(Object, Object)} method will
+	 * be called with the current reactive context.
+	 * @param f the {@link BiFunction} to wrap
+	 * @return a {@link BiFunction} which will have its reactive context set to the current context.
+	 */
+	public static <T, U, V> BiFunction<T, U, V> wrap(BiFunction<T, U, V> fn){
+		return wrap(capture(), fn);
+	}
+
+	static <T, U, V> BiFunction<T, U, V> wrap(Object[] state, BiFunction<T, U, V> fn){
+		return (t, u) -> {
+			Object[] oldState = install(state);
+			try {
+				return fn.apply(t, u);
+			}finally {
+				restore(oldState);
+			}
+		};
+	}
+	
+	/**
+	 * Wraps a {@link Function} so that its {@link Function#apply(Object)} method will
+	 * be called with the current reactive context.
+	 * @param f the {@link Function} to wrap
+	 * @return a {@link Function} which will have its reactive context set to the current context.
+	 */
+	public static <T, U> Function<T, U> wrap(Function<T, U> fn){
+		return wrap(capture(), fn);
+	}
+
+	static <T, U> Function<T, U> wrap(Object[] state, Function<T, U> fn){
+		return v -> {
+			Object[] oldState = install(state);
+			try {
+				return fn.apply(v);
+			}finally {
+				restore(oldState);
+			}
+		};
+	}
+
+	/**
+	 * Wraps a {@link CompletableFuture} so that all its handlers
+	 * are called with the current reactive context.
+	 * @param f the {@link CompletableFuture} to wrap
+	 * @return a {@link CompletableFuture} which will have its reactive context set to the current context.
+	 */
+	public static <T> CompletableFuture<T> wrap(CompletableFuture<T> f) {
+		return wrap(capture(), f);
+	}
+
+	static <T> CompletableFuture<T> wrap(Object[] state, CompletableFuture<T> f) {
+		return new CompletableFutureWrapper<T>(state, f);
+	}
+
+	/**
+	 * Wraps a {@link CompletionStage} so that all its handlers
+	 * are called with the current reactive context.
+	 * @param f the {@link CompletionStage} to wrap
+	 * @return a {@link CompletionStage} which will have its reactive context set to the current context.
+	 */
+	public static <T> CompletionStage<T> wrap(CompletionStage<T> f) {
+		return wrap(capture(), f);
+	}
+
+	static <T> CompletionStage<T> wrap(Object[] state, CompletionStage<T> f) {
+		return new CompletionStageWrapper<T>(state, f);
 	}
 }
