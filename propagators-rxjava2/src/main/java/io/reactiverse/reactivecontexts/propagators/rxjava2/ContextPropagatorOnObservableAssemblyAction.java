@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava2;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.functions.Function;
@@ -15,7 +16,7 @@ public class ContextPropagatorOnObservableAssemblyAction implements Function<Obs
 	public class ContextPropagatorObservable<T> extends Observable<T> {
 
 		private Observable<T> source;
-		private Object[] context;
+		private ContextState context;
 
 		public ContextPropagatorObservable(Observable<T> t) {
 			this.source = t;
@@ -24,11 +25,11 @@ public class ContextPropagatorOnObservableAssemblyAction implements Function<Obs
 
 		@Override
 		protected void subscribeActual(Observer<? super T> observer) {
-			Object[] previousContext = Context.install(context);
+			ContextState previousContext = context.install();
 			try {
 				source.subscribe(observer);
 			}finally {
-				Context.restore(previousContext);
+				previousContext.restore();
 			}
 		}
 

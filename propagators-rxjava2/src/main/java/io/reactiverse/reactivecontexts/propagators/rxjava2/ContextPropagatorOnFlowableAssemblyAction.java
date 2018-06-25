@@ -3,6 +3,7 @@ package io.reactiverse.reactivecontexts.propagators.rxjava2;
 import org.reactivestreams.Subscriber;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 
@@ -16,7 +17,7 @@ public class ContextPropagatorOnFlowableAssemblyAction implements Function<Flowa
 	public class ContextPropagatorFlowable<T> extends Flowable<T> {
 
 		private Flowable<T> source;
-		private Object[] context;
+		private ContextState context;
 
 		public ContextPropagatorFlowable(Flowable<T> t) {
 			this.source = t;
@@ -25,11 +26,11 @@ public class ContextPropagatorOnFlowableAssemblyAction implements Function<Flowa
 
 		@Override
 		protected void subscribeActual(Subscriber<? super T> observer) {
-			Object[] previousContext = Context.install(context);
+			ContextState previousContext = context.install();
 			try {
 				source.subscribe(observer);
 			}finally {
-				Context.restore(previousContext);
+				previousContext.restore();
 			}
 		}
 

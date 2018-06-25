@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava2;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.functions.Function;
@@ -15,7 +16,7 @@ public class ContextPropagatorOnSingleAssemblyAction implements Function<Single,
 	public class ContextPropagatorSingle<T> extends Single<T> {
 
 		private Single<T> source;
-		private Object[] context;
+		private ContextState context;
 
 		public ContextPropagatorSingle(Single<T> t) {
 			this.source = t;
@@ -24,11 +25,11 @@ public class ContextPropagatorOnSingleAssemblyAction implements Function<Single,
 
 		@Override
 		protected void subscribeActual(SingleObserver<? super T> observer) {
-			Object[] previousContext = Context.install(context);
+			ContextState previousContext = context.install();
 			try {
 				source.subscribe(observer);
 			}finally {
-				Context.restore(previousContext);
+				previousContext.restore();
 			}
 		}
 

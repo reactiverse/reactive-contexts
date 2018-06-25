@@ -1,11 +1,10 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava1;
 
 import io.reactiverse.reactivecontexts.core.Context;
-import io.reactiverse.reactivecontexts.propagators.rxjava1.ContextPropagatorOnSingleCreateAction.ContextCapturerSingle.OnAssemblySingleSubscriber;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import rx.Completable.OnSubscribe;
 import rx.CompletableSubscriber;
 import rx.Subscription;
-import rx.Completable;
 import rx.functions.Func1;
 
 public class ContextPropagatorOnCompleteCreateAction implements Func1<OnSubscribe, OnSubscribe> {
@@ -19,7 +18,7 @@ public class ContextPropagatorOnCompleteCreateAction implements Func1<OnSubscrib
 
 	    final OnSubscribe source;
 
-		private Object[] states;
+		private ContextState states;
 
 	    public ContextCapturerCompletable(OnSubscribe source) {
 	        this.source = source;
@@ -28,52 +27,52 @@ public class ContextPropagatorOnCompleteCreateAction implements Func1<OnSubscrib
 
 	    @Override
 	    public void call(CompletableSubscriber t) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.call(new OnAssemblyCompletableSubscriber(t, states));
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 	    }
 
 	    static final class OnAssemblyCompletableSubscriber implements CompletableSubscriber {
 
 	        final CompletableSubscriber actual;
-			private final Object[] states;
+			private final ContextState states;
 
 
-	        public OnAssemblyCompletableSubscriber(CompletableSubscriber actual, Object[] states) {
+	        public OnAssemblyCompletableSubscriber(CompletableSubscriber actual, ContextState states) {
 	            this.actual = actual;
 	            this.states = states;
 	        }
 
 	        @Override
 	        public void onError(Throwable e) {
-	        	Object[] previousStates = Context.install(states);
+	        	ContextState previousStates = states.install();
 				try {
 					actual.onError(e);
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 	        }
 
 	        @Override
 	        public void onCompleted() {
-	        	Object[] previousStates = Context.install(states);
+	        	ContextState previousStates = states.install();
 				try {
 					actual.onCompleted();
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 	        }
 
 			@Override
 			public void onSubscribe(Subscription d) {
-	        	Object[] previousStates = Context.install(states);
+				ContextState previousStates = states.install();
 				try {
 					actual.onSubscribe(d);
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 			}
 	    }

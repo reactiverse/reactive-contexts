@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava2;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.disposables.Disposable;
@@ -17,7 +18,7 @@ public class ContextPropagatorOnMaybeCreateAction
 	public class ContextCapturerMaybe<T> implements MaybeObserver<T> {
 
 	    private final MaybeObserver<T> source;
-		private final Object[] states;
+		private final ContextState states;
 
 		public ContextCapturerMaybe(Maybe<T> observable, MaybeObserver<T> observer) {
 	    	this.source = observer;
@@ -26,41 +27,41 @@ public class ContextPropagatorOnMaybeCreateAction
 
 		@Override
 		public void onComplete() {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onComplete();
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onError(Throwable t) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onError(t);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onSubscribe(Disposable d) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onSubscribe(d);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onSuccess(T v) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onSuccess(v);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 	}

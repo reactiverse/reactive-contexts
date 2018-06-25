@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava1;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
@@ -17,7 +18,7 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 
 	    final Observable.OnSubscribe<T> source;
 
-		private Object[] states;
+		private ContextState states;
 
 	    public ContextCapturerObservable(Observable.OnSubscribe<T> source) {
 	        this.source = source;
@@ -26,11 +27,11 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 
 		@Override
 		public void call(Subscriber<? super T> t) {
-        	Object[] previousStates = Context.install(states);
+			ContextState previousStates = states.install();
 			try {
 	    		source.call(new OnAssemblyObservableSubscriber<T>(t, states));
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 			
 		}
@@ -38,10 +39,10 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 	    static final class OnAssemblyObservableSubscriber<T> extends Subscriber<T> {
 
 	        final Subscriber<? super T> actual;
-			private final Object[] states;
+			private final ContextState states;
 
 
-	        public OnAssemblyObservableSubscriber(Subscriber<? super T> actual, Object[] states) {
+	        public OnAssemblyObservableSubscriber(Subscriber<? super T> actual, ContextState states) {
 	            this.actual = actual;
 	            this.states = states;
 	            actual.add(this);
@@ -49,31 +50,31 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 
 	        @Override
 	        public void onError(Throwable e) {
-	        	Object[] previousStates = Context.install(states);
+	        	ContextState previousStates = states.install();
 				try {
 					actual.onError(e);
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 	        }
 
 	        @Override
 	        public void onNext(T t) {
-	        	Object[] previousStates = Context.install(states);
+	        	ContextState previousStates = states.install();
 				try {
 					actual.onNext(t);
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 	        }
 
 	        @Override
 	        public void onCompleted() {
-	        	Object[] previousStates = Context.install(states);
+	        	ContextState previousStates = states.install();
 				try {
 					actual.onCompleted();
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 	        }
 }

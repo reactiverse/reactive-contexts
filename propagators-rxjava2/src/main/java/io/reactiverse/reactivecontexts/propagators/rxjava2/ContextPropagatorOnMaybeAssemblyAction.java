@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava2;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.functions.Function;
@@ -15,7 +16,7 @@ public class ContextPropagatorOnMaybeAssemblyAction implements Function<Maybe, M
 	public class ContextPropagatorMaybe<T> extends Maybe<T> {
 
 		private Maybe<T> source;
-		private Object[] context;
+		private ContextState context;
 
 		public ContextPropagatorMaybe(Maybe<T> t) {
 			this.source = t;
@@ -24,11 +25,11 @@ public class ContextPropagatorOnMaybeAssemblyAction implements Function<Maybe, M
 
 		@Override
 		protected void subscribeActual(MaybeObserver<? super T> observer) {
-			Object[] previousContext = Context.install(context);
+			ContextState previousContext = context.install();
 			try {
 				source.subscribe(observer);
 			}finally {
-				Context.restore(previousContext);
+				previousContext.restore();
 			}
 		}
 

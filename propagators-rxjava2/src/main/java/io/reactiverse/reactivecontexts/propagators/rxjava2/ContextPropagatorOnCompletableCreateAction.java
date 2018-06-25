@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava2;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
@@ -17,7 +18,7 @@ public class ContextPropagatorOnCompletableCreateAction
 	final static class ContextCapturerCompletable implements CompletableObserver {
 
 	    private final CompletableObserver source;
-		private final Object[] states;
+		private final ContextState states;
 
 	    public ContextCapturerCompletable(Completable s, CompletableObserver o) {
 	    	this.source = o;
@@ -26,31 +27,31 @@ public class ContextPropagatorOnCompletableCreateAction
 
 		@Override
 		public void onError(Throwable t) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onError(t);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onSubscribe(Disposable d) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onSubscribe(d);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onComplete() {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onComplete();
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 	}

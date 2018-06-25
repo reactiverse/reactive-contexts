@@ -4,6 +4,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Flowable;
 import io.reactivex.functions.BiFunction;
 
@@ -18,7 +19,7 @@ public class ContextPropagatorOnFlowableCreateAction
 	public class ContextCapturerFlowable<T> implements Subscriber<T> {
 
 	    private final Subscriber<T> source;
-		private final Object[] states;
+		private final ContextState states;
 
 		public ContextCapturerFlowable(Flowable<T> observable, Subscriber<T> observer) {
 	    	this.source = observer;
@@ -27,41 +28,41 @@ public class ContextPropagatorOnFlowableCreateAction
 
 		@Override
 		public void onComplete() {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onComplete();
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onError(Throwable t) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onError(t);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onNext(T v) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onNext(v);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 
 		@Override
 		public void onSubscribe(Subscription s) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.onSubscribe(s);
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 		}
 	}

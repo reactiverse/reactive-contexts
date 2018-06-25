@@ -12,10 +12,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 final class CompletableFutureWrapper<T> extends CompletableFuture<T> {
-	private final Object[] state;
+	private final ContextState state;
 	private final CompletableFuture<T> f;
 
-	CompletableFutureWrapper(Object[] state, CompletableFuture<T> f) {
+	CompletableFutureWrapper(ContextState state, CompletableFuture<T> f) {
 		this.state = state;
 		this.f = f;
 	}

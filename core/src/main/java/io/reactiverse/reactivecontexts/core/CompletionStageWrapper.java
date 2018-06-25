@@ -9,10 +9,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 final class CompletionStageWrapper<T> implements CompletionStage<T> {
-	private final Object[] state;
+	private final ContextState state;
 	private final CompletionStage<T> f;
 
-	CompletionStageWrapper(Object[] state, CompletionStage<T> f) {
+	CompletionStageWrapper(ContextState state, CompletionStage<T> f) {
 		this.state = state;
 		this.f = f;
 	}

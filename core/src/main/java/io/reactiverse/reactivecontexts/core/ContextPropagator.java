@@ -25,7 +25,7 @@ package io.reactiverse.reactivecontexts.core;
 public interface ContextPropagator {
 
 	/**
-	 * Called by {@link Context#load()} to initialise every propagator. Implement this method
+	 * Called by {@link Context} to initialise every propagator. Implement this method
 	 * to register your propagator in whatever Reactive library/scheduler you want to propagate
 	 * contexts for.
 	 */

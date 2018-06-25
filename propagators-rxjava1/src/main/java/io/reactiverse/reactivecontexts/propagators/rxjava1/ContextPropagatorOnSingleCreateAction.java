@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava1;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import rx.Single;
 import rx.Single.OnSubscribe;
 import rx.SingleSubscriber;
@@ -17,7 +18,7 @@ public class ContextPropagatorOnSingleCreateAction implements Func1<OnSubscribe,
 
 	    final Single.OnSubscribe<T> source;
 
-		private Object[] states;
+		private ContextState states;
 
 	    public ContextCapturerSingle(Single.OnSubscribe<T> source) {
 	        this.source = source;
@@ -26,21 +27,21 @@ public class ContextPropagatorOnSingleCreateAction implements Func1<OnSubscribe,
 
 	    @Override
 	    public void call(SingleSubscriber<? super T> t) {
-        	Object[] previousStates = Context.install(states);
+        	ContextState previousStates = states.install();
 			try {
 	    		source.call(new OnAssemblySingleSubscriber<T>(t, states));
 			}finally {
-				Context.restore(previousStates);
+				previousStates.restore();
 			}
 	    }
 
 	    static final class OnAssemblySingleSubscriber<T> extends SingleSubscriber<T> {
 
 	        final SingleSubscriber<? super T> actual;
-			private final Object[] states;
+			private final ContextState states;
 
 
-	        public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, Object[] states) {
+	        public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, ContextState states) {
 	            this.actual = actual;
 	            this.states = states;
 	            actual.add(this);
@@ -48,21 +49,21 @@ public class ContextPropagatorOnSingleCreateAction implements Func1<OnSubscribe,
 
 	        @Override
 	        public void onError(Throwable e) {
-	        	Object[] previousStates = Context.install(states);
+	        	ContextState previousStates = states.install();
 				try {
 					actual.onError(e);
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 	        }
 
 	        @Override
 	        public void onSuccess(T t) {
-	        	Object[] previousStates = Context.install(states);
+	        	ContextState previousStates = states.install();
 				try {
 					actual.onSuccess(t);
 				}finally {
-					Context.restore(previousStates);
+					previousStates.restore();
 				}
 	        }
 	    }

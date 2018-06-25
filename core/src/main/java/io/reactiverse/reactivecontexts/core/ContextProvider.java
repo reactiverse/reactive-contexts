@@ -28,14 +28,14 @@ package io.reactiverse.reactivecontexts.core;
 public interface ContextProvider<State> {
 
 	/**
-	 * Called by {@link Context#install(Object[])} to install your previously-captured state.
+	 * Called by {@link Context#install(ContextState)} to install your previously-captured state.
 	 * @param state your context state, as previously captured by {@link #capture()} or {@link #install(Object)}.
 	 * @return the current/previous context state, before reinstalling the new state.
 	 */
 	public State install(State state);
 	
 	/**
-	 * Called by {@link Context#restore(Object[])} to install your previously-captured state.
+	 * Called by {@link Context#restore(ContextState)} to install your previously-captured state.
 	 * @param previousState your context state, as previously captured by {@link #capture()} or {@link #install(Object)}.
 	 */
 	public void restore(State previousState);

@@ -1,6 +1,7 @@
 package io.reactiverse.reactivecontexts.propagators.rxjava2;
 
 import io.reactiverse.reactivecontexts.core.Context;
+import io.reactiverse.reactivecontexts.core.ContextState;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.functions.Function;
@@ -15,7 +16,7 @@ public class ContextPropagatorOnCompletableAssemblyAction implements Function<Co
 	public class ContextPropagatorCompletable extends Completable {
 
 		private Completable source;
-		private Object[] context;
+		private ContextState context;
 
 		public ContextPropagatorCompletable(Completable t) {
 			this.source = t;
@@ -24,11 +25,11 @@ public class ContextPropagatorOnCompletableAssemblyAction implements Function<Co
 
 		@Override
 		protected void subscribeActual(CompletableObserver observer) {
-			Object[] previousContext = Context.install(context);
+			ContextState previousContext = context.install();
 			try {
 				source.subscribe(observer);
 			}finally {
-				Context.restore(previousContext);
+				previousContext.restore();
 			}
 		}
 

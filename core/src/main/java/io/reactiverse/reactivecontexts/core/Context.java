@@ -25,14 +25,16 @@ import java.util.function.Function;
  * </p>
  * 
  *  <pre><code>
- * Object[] contexts = Context.capture();
+ * ContextState context = Context.capture();
+ * // ...
+ * ContextState previousContext = context.install();
  * try{
  *     // your context-requiring code
  * }finally{
- *     Context.restore(contexts);
+ *     previousContext.restore();
  * }
  *  </code></pre>
- * * <p>
+ * <p>
  * Or you can use one of the many {@link #wrap(Runnable)} methods for wrapping reactive types:
  * </p>
  * 
@@ -40,18 +42,73 @@ import java.util.function.Function;
  *  Runnable runnableWithContext = Context.wrap(() -> ...your context-requiring code...);
  *  CompletionStage&lt;String&gt; completionStageWithContext = Context.wrap(originalCompletionStage);
  *  </code></pre>
-
+ * <h2>Threads, class loaders</h2>
+ * <p>
+ *  If you are using a flat classpath, this is all you need to know. If you're using a modular class loader,
+ *  or need to have several independent {@link Context} objects, each with their own list of providers and 
+ *  propagators, then you need to stop using the global {@link Context} instance and create your own.
+ * </p>
+ * <p>
+ *  You can create your own Context with {@link #Context()}, then set it as a thread-local with
+ *  {@link #setThreadInstance(Context)}, and when you're done you can clear the thread-local with
+ *  {@link #clearThreadInstance()}.
+ * </p>
+ * <p>
+ *  Note that each captured context state will restore the proper Context thread-local when
+ *  calling {@link #install(ContextState)} and {@link #restore(ContextState)}, so as to avoid
+ *  interference.
+ * </p>
  * @author Stéphane Épardaud
  */
 public class Context {
+
+	private static Context instance = new Context();
+	private static ThreadLocal<Context> threadInstance = new ThreadLocal<Context>();
 	
-	//
-	// Helpers
+	/**
+	 * Returns a {@link Context} type suitable for handling Reactive Contexts. If there is a
+	 * thread-local {@link Context} as installed by {@link #setThreadInstance(Context)}, the
+	 * thread-local instance is returned. If not, a global shared instance is returned.
+	 * @return a thread-local or global instance of {@link Context}.
+	 * @see #setThreadInstance(Context)
+	 */
+	public static Context getInstance() {
+		Context ret = threadInstance.get();
+		if(ret == null)
+			ret = instance;
+		return ret;
+	}
 	
-	private static List<ContextProvider<?>> providers = new ArrayList<>();
-	private static List<ContextPropagator> propagators = new ArrayList<>();
+	/**
+	 * Installs a {@link Context} instance to use in the current thread. It will be returned
+	 * by {@link #getInstance()} within the current thread.
+	 * 
+	 * @param instance the {@link Context} instance to install in the current thread
+	 * @return the previous instance of {@link Context} that was associated to the current thread
+	 * @see #clearThreadInstance()
+	 */
+	public static Context setThreadInstance(Context instance) {
+		Context oldInstance = threadInstance.get();
+		threadInstance.set(instance);
+		return oldInstance;
+	}
+
+	/**
+	 * Clears the currently-associated {@link Context} instance for the current thread.
+	 * @see #setThreadInstance(Context)
+	 */
+	public static void clearThreadInstance() {
+		threadInstance.remove();
+	}
+
+	private List<ContextProvider<?>> providers = new ArrayList<>();
+	private List<ContextPropagator> propagators = new ArrayList<>();
 	
-	static {
+	/**
+	 * Creates a new Context instance with the associated {@link ContextProvider} and {@link ContextPropagator}
+	 * as looked up by {@link ServiceLoader#load(Class)} for the current classloader.
+	 */
+	public Context() {
 		for (ContextProvider<?> listener : ServiceLoader.load(ContextProvider.class)) {
 			providers.add(listener);
 		}
@@ -60,61 +117,75 @@ public class Context {
 			propagator.setup();
 		}
 	}
+
+	/**
+	 * Captures the current state as given by the current context.
+	 * @return the current context state
+	 * @see #getInstance()
+	 */
+	public static ContextState capture() {
+		return getInstance().captureState();
+	}
 	
 	/**
-	 * Captures all contexts currently registered via {@link ContextProvider} plugins.
+	 * Captures all contexts currently registered via this {@link Context}'s {@link ContextProvider} plugins.
 	 * @return the storage required for all currently registered contexts.
-	 * @see #install(Object[])
+	 * @see #install(ContextState)
 	 */
-	public static Object[] capture() {
+	public ContextState captureState() {
 		Object[] ret = new Object[providers.size()];
 		for (int i = 0; i < providers.size(); i++) {
 			ContextProvider<?> plugin = providers.get(i);
 			ret[i] = plugin.capture();
 		}
-		return ret;
+		return new ContextState(this, ret, threadInstance.get());
 	}
 
 	/**
-	 * Installs a set of contexts previously captured with {@link #capture()} to all
-	 * currently registered {@link ContextProvider} plugins.
-	 * @param states the set of contexts previously captured with {@link #capture()}
+	 * Installs a set of contexts previously captured with {@link #captureState()} to all
+	 * currently registered {@link ContextProvider} plugins in this {@link Context}.
+	 * @param state the context state previously captured with {@link #captureState()}
 	 * @return the (current/before installation) storage required for all currently registered contexts.
-	 * @see #capture()
-	 * @see #restore(Object[])
+	 * @see #captureState()
+	 * @see #restore(ContextState)
+	 * @throws IllegalArgumentException if the state to install has not been captured by this {@link Context} instance.
 	 */
-	public static Object[] install(Object[] states) {
-		Object[] ret = new Object[providers.size()];
+	public ContextState install(ContextState state) {
+		if(this != state.getContext())
+			throw new IllegalArgumentException("State was captured with different context");
+		Object[] oldStates = new Object[providers.size()];
+		Object[] states = state.getState();
 		for (int i = 0; i < providers.size(); i++) {
 			@SuppressWarnings("unchecked")
 			ContextProvider<Object> plugin = (ContextProvider<Object>) providers.get(i);
-			ret[i] = plugin.install(states[i]);
+			oldStates[i] = plugin.install(states[i]);
 		}
-		return ret;
+		return new ContextState(this, oldStates, setThreadInstance(this));
 	}
 
 	/**
 	 * Restores a set of contexts previously captured with {@link #install(Object[])} to all
-	 * currently registered {@link ContextProvider} plugins.
-	 * @param states a set of contexts previously captured with {@link #install(Object[])}
-	 * @see #install(Object[])
+	 * currently registered {@link ContextProvider} plugins of this {@link Context}.
+	 * @param states a set of contexts previously captured with {@link #install(ContextState)}
+	 * @see #install(ContextState)
+	 * @throws IllegalArgumentException if the state to install has not been captured by this {@link Context} instance.
 	 */
-	public static void restore(Object[] states) {
+	public void restore(ContextState state) {
+		if(this != state.getContext())
+			throw new IllegalArgumentException("State was captured with different context");
+		Object[] states = state.getState();
 		for (int i = 0; i < providers.size(); i++) {
 			@SuppressWarnings("unchecked")
 			ContextProvider<Object> plugin = (ContextProvider<Object>) providers.get(i);
 			plugin.restore(states[i]);
 		}
+		Context previousThreadContext = state.getPreviousThreadContext();
+		if(previousThreadContext == null)
+			clearThreadInstance();
+		else
+			setThreadInstance(previousThreadContext);
 	}
 
-	/**
-	 * Initialises the list of registered {@link ContextProvider} and {@link ContextPropagator}
-	 * if they are not already initialised. Otherwise, has no effect.
-	 */
-	public static void load() {
-		// does not do anything, but triggers the static block load
-	}
-	
 	/**
 	 * Wraps a {@link Runnable} so that its {@link Runnable#run()} method will
 	 * be called with the current reactive context.
@@ -125,13 +196,13 @@ public class Context {
 		return wrap(capture(), f);
 	}
 	
-	static Runnable wrap(Object[] state, Runnable f) {
+	static Runnable wrap(ContextState state, Runnable f) {
 		return () -> {
-			Object[] oldState = install(state);
+			ContextState oldState = state.install();
 			try {
 				f.run();
 			}finally {
-				restore(oldState);
+				oldState.restore();
 			}
 		};
 	}
@@ -146,13 +217,13 @@ public class Context {
 		return wrap(capture(), f);
 	}
 	
-	static <T> Consumer<T> wrap(Object[] state, Consumer<T> f) {
+	static <T> Consumer<T> wrap(ContextState state, Consumer<T> f) {
 		return v -> {
-			Object[] oldState = install(state);
+			ContextState oldState = state.install();
 			try {
 				f.accept(v);
 			}finally {
-				restore(oldState);
+				oldState.restore();
 			}
 		};
 	}
@@ -167,13 +238,13 @@ public class Context {
 		return wrap(capture(), f);
 	}
 	
-	static <T, U> BiConsumer<T, U> wrap(Object[] state, BiConsumer<T, U> f) {
+	static <T, U> BiConsumer<T, U> wrap(ContextState state, BiConsumer<T, U> f) {
 		return (t, u) -> {
-			Object[] oldState = install(state);
+			ContextState oldState = state.install();
 			try {
 				f.accept(t, u);
 			}finally {
-				restore(oldState);
+				oldState.restore();
 			}
 		};
 	}
@@ -188,13 +259,13 @@ public class Context {
 		return wrap(capture(), fn);
 	}
 
-	static <T, U, V> BiFunction<T, U, V> wrap(Object[] state, BiFunction<T, U, V> fn){
+	static <T, U, V> BiFunction<T, U, V> wrap(ContextState state, BiFunction<T, U, V> fn){
 		return (t, u) -> {
-			Object[] oldState = install(state);
+			ContextState oldState = state.install();
 			try {
 				return fn.apply(t, u);
 			}finally {
-				restore(oldState);
+				oldState.restore();
 			}
 		};
 	}
@@ -209,13 +280,13 @@ public class Context {
 		return wrap(capture(), fn);
 	}
 
-	static <T, U> Function<T, U> wrap(Object[] state, Function<T, U> fn){
+	static <T, U> Function<T, U> wrap(ContextState state, Function<T, U> fn){
 		return v -> {
-			Object[] oldState = install(state);
+			ContextState oldState = state.install();
 			try {
 				return fn.apply(v);
 			}finally {
-				restore(oldState);
+				oldState.restore();
 			}
 		};
 	}
@@ -230,7 +301,7 @@ public class Context {
 		return wrap(capture(), f);
 	}
 
-	static <T> CompletableFuture<T> wrap(Object[] state, CompletableFuture<T> f) {
+	static <T> CompletableFuture<T> wrap(ContextState state, CompletableFuture<T> f) {
 		return new CompletableFutureWrapper<T>(state, f);
 	}
 
@@ -244,7 +315,7 @@ public class Context {
 		return wrap(capture(), f);
 	}
 
-	static <T> CompletionStage<T> wrap(Object[] state, CompletionStage<T> f) {
+	static <T> CompletionStage<T> wrap(ContextState state, CompletionStage<T> f) {
 		return new CompletionStageWrapper<T>(state, f);
 	}
 }

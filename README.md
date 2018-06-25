@@ -90,7 +90,7 @@ Import the following Maven module:
 <dependency>
     <groupId>io.reactiverse</groupId>
     <artifactId>reactive-contexts-core</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
@@ -199,7 +199,7 @@ public class ContextPropagatorOnSingleCreateAction implements Func1<OnSubscribe,
 
         final Single.OnSubscribe<T> source;
 
-        private Object[] states;
+        private ContextState states;
 
         public ContextCapturerSingle(Single.OnSubscribe<T> source) {
             this.source = source;
@@ -210,21 +210,21 @@ public class ContextPropagatorOnSingleCreateAction implements Func1<OnSubscribe,
         @Override
         public void call(SingleSubscriber<? super T> t) {
             // restore the context for subscription
-            Object[] previousStates = Context.install(states);
+            ContextState previousStates = states.install();
             try {
                 source.call(new OnAssemblySingleSubscriber<T>(t, states));
             }finally {
-                Context.restore(previousStates);
+                previousStates.restore();
             }
         }
 
         static final class OnAssemblySingleSubscriber<T> extends SingleSubscriber<T> {
 
             final SingleSubscriber<? super T> actual;
-            private final Object[] states;
+            private final ContextState states;
 
 
-            public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, Object[] states) {
+            public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, ContextState states) {
                 this.actual = actual;
                 this.states = states;
                 actual.add(this);
@@ -233,22 +233,22 @@ public class ContextPropagatorOnSingleCreateAction implements Func1<OnSubscribe,
             @Override
             public void onError(Throwable e) {
                 // propagate the context for listeners
-                Object[] previousStates = Context.install(states);
+                ContextState previousStates = states.install();
                 try {
                     actual.onError(e);
                 }finally {
-                    Context.restore(previousStates);
+                    previousStates.restore();
                 }
             }
 
             @Override
             public void onSuccess(T t) {
                 // propagate the context for listeners
-                Object[] previousStates = Context.install(states);
+                ContextState previousStates = states.install();
                 try {
                     actual.onSuccess(t);
                 }finally {
-                    Context.restore(previousStates);
+                    previousStates.restore();
                 }
             }
         }
@@ -264,13 +264,13 @@ you will have to manually capture and restore contexts, for example:
 
 ```java
 CompletionStage<Response> userResponse = invokeUserAction();
-Object[] states = Context.capture();
+ContextState states = Context.capture();
 userResponse.thenAccept(response -> {
-    Object[] previousStates = Context.install(states);
+    ContextState previousStates = states.install();
     try {
         writeResponse(response);
     }finally {
-        Context.restore(previousStates);
+        previousStates.restore();
     }
 });
 ```
@@ -281,3 +281,18 @@ Alternately, you can use `Context.wrap` to propagate reactive contexts to many f
 CompletionStage<Response> userResponse = Context.wrap(invokeUserAction());
 userResponse.thenAccept(response -> writeResponse(response));
 ```
+
+# Threads, class loaders
+
+If you are using a flat classpath, this is all you need to know. If you're using a modular class loader,
+or need to have several independent `Context` objects, each with their own list of providers and 
+propagators, then you need to stop using the global `Context` instance and create your own.
+
+You can create your own Context with `new Context()`, then set it as a thread-local with
+`Context.setThreadInstance(Context)`, and when you're done you can clear the thread-local with
+`Context.clearThreadInstance()`.
+
+Note that each captured context state will restore the proper Context thread-local when
+calling `ContextState.install()` and `ContextState.restore()`, so as to avoid
+interference.
+
