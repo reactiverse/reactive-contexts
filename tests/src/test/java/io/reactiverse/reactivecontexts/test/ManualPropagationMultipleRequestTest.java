@@ -2,7 +2,6 @@ package io.reactiverse.reactivecontexts.test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -12,11 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.reactiverse.reactivecontexts.core.Context;
-import io.reactiverse.reactivecontexts.test.MyContext;
-import rx.Emitter.BackpressureMode;
-import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
 
 public class ManualPropagationMultipleRequestTest {
 	

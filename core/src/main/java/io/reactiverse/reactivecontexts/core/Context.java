@@ -64,6 +64,14 @@ public class Context {
 
 	private static Context instance = new Context();
 	private static ThreadLocal<Context> threadInstance = new ThreadLocal<Context>();
+
+	/**
+	 * Initialises the list of registered {@link ContextProvider} and {@link ContextPropagator}
+	 * if they are not already initialised. Otherwise, has no effect.
+	 */
+	public static void load() {
+		// does not do anything, but triggers the static block load
+	}
 	
 	/**
 	 * Returns a {@link Context} type suitable for handling Reactive Contexts. If there is a

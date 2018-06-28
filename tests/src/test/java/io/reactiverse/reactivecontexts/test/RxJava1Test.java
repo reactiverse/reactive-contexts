@@ -21,7 +21,7 @@ public class RxJava1Test {
 	@BeforeClass
 	public static void init() {
 		// initialise
-		Context.load();
+		Context.getInstance();
 	}
 	
 	@Before
