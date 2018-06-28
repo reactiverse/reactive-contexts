@@ -10,7 +10,7 @@
 
 	<groupId>io.reactiverse</groupId>
 	<artifactId>reactive-contexts-parent</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.0.4</version>
 	<packaging>pom</packaging>
 
 	<name>Reactive Contexts</name>
@@ -29,7 +29,7 @@
 		<connection>scm:git:git@github.com:reactiverse/reactive-contexts.git</connection>
 		<developerConnection>scm:git:git@github.com:reactiverse/reactive-contexts.git</developerConnection>
 		<url>git@github.com:reactiverse/reactive-contexts.git</url>
-	  <tag>HEAD</tag>
+	  <tag>0.0.4</tag>
   </scm>
 
 	<properties>

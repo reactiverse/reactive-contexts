@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.reactiverse</groupId>
 		<artifactId>reactive-contexts-parent</artifactId>
-		<version>0.0.4-SNAPSHOT</version>
+		<version>0.0.4</version>
 	</parent>
 	<artifactId>reactive-contexts-core</artifactId>
 	<name>reactive-contexts-core</name>
