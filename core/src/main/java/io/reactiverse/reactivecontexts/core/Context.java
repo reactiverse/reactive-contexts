@@ -39,7 +39,7 @@ import java.util.function.Function;
  * </p>
  * 
  *  <pre><code>
- *  Runnable runnableWithContext = Context.wrap(() -> ...your context-requiring code...);
+ *  Runnable runnableWithContext = Context.wrap(() -&gt; ...your context-requiring code...);
  *  CompletionStage&lt;String&gt; completionStageWithContext = Context.wrap(originalCompletionStage);
  *  </code></pre>
  * <h2>Threads, class loaders</h2>
@@ -172,9 +172,9 @@ public class Context {
 	}
 
 	/**
-	 * Restores a set of contexts previously captured with {@link #install(Object[])} to all
+	 * Restores a set of contexts previously captured with {@link #install(ContextState) to all
 	 * currently registered {@link ContextProvider} plugins of this {@link Context}.
-	 * @param states a set of contexts previously captured with {@link #install(ContextState)}
+	 * @param state a set of contexts previously captured with {@link #install(ContextState)}
 	 * @see #install(ContextState)
 	 * @throws IllegalArgumentException if the state to install has not been captured by this {@link Context} instance.
 	 */
@@ -260,7 +260,7 @@ public class Context {
 	/**
 	 * Wraps a {@link BiFunction} so that its {@link BiFunction#apply(Object, Object)} method will
 	 * be called with the current reactive context.
-	 * @param f the {@link BiFunction} to wrap
+	 * @param fn the {@link BiFunction} to wrap
 	 * @return a {@link BiFunction} which will have its reactive context set to the current context.
 	 */
 	public static <T, U, V> BiFunction<T, U, V> wrap(BiFunction<T, U, V> fn){
@@ -281,7 +281,7 @@ public class Context {
 	/**
 	 * Wraps a {@link Function} so that its {@link Function#apply(Object)} method will
 	 * be called with the current reactive context.
-	 * @param f the {@link Function} to wrap
+	 * @param fn the {@link Function} to wrap
 	 * @return a {@link Function} which will have its reactive context set to the current context.
 	 */
 	public static <T, U> Function<T, U> wrap(Function<T, U> fn){
