@@ -90,7 +90,7 @@ Import the following Maven module:
 <dependency>
     <groupId>io.reactiverse</groupId>
     <artifactId>reactive-contexts-core</artifactId>
-    <version>0.0.3</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -99,11 +99,9 @@ presence of the following optional plugins in your classpath:
 
 artifactId | Description
 --- | ---
+`reactive-contexts-core` | Core engine
 `reactive-contexts-propagators-rxjava1` | Propagates contexts for RxJava1
 `reactive-contexts-propagators-rxjava2` | Propagates contexts for RxJava2
-`reactive-contexts-providers-redpipe` | Propagates Redpipe contexts
-`reactive-contexts-providers-resteasy` | Propagates RESTEasy contexts
-`reactive-contexts-providers-weld` | Propagates Weld contexts
 
 If you are using RxJava 1 or 2, you don't need anything to propagate your contexts: every RxJava type (`Single`,
 `Flowable`…) will have the right contexts automatically propagated. If you are using reactive types that don't
