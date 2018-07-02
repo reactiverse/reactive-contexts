@@ -172,7 +172,7 @@ public class Context {
 	}
 
 	/**
-	 * Restores a set of contexts previously captured with {@link #install(ContextState) to all
+	 * Restores a set of contexts previously captured with {@link #install(ContextState)} to all
 	 * currently registered {@link ContextProvider} plugins of this {@link Context}.
 	 * @param state a set of contexts previously captured with {@link #install(ContextState)}
 	 * @see #install(ContextState)
