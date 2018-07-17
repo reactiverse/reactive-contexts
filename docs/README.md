@@ -81,9 +81,6 @@ in your code. Automatic context propagation FTW!
 
 # Usage
 
-Note: at the moment, you have to clone and install Reactive Contexts locally, because it hasn't yet been pushed to
-Maven Central.
-
 Import the following Maven module:
 
 ```xml
