@@ -18,7 +18,7 @@ package io.reactiverse.reactivecontexts.core;
  * </p>
  * <p>
  * In order to register your {@link ContextProvider} you need to create a file in 
- * <tt>META-INF/services/io.reactiverse.reactivecontexts.core.ContextProvider</tt> which contains a list
+ * <code>META-INF/services/io.reactiverse.reactivecontexts.core.ContextProvider</code> which contains a list
  * of fully-qualified type names of each of your implementations of {@link ContextProvider} (one per line).
  * </p>
  *
