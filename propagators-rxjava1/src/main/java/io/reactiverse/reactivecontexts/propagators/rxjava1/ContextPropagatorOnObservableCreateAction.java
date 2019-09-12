@@ -4,7 +4,6 @@ import io.reactiverse.reactivecontexts.core.Context;
 import io.reactiverse.reactivecontexts.core.ContextState;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Producer;
 import rx.Subscriber;
 import rx.functions.Func1;
 
@@ -78,15 +77,6 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 					previousStates.restore();
 				}
 	        }
-
-            @Override
-            public void setProducer(Producer p) {
-	        	if (p.getClass().getSimpleName().startsWith("OnSubscribeConcatMap")) {
-					p.request(2);
-				} else {
-	        		super.setProducer(p);
-				}
-            }
         }
 	}
 }
