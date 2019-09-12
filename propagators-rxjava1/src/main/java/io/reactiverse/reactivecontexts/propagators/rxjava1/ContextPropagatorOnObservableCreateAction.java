@@ -4,6 +4,7 @@ import io.reactiverse.reactivecontexts.core.Context;
 import io.reactiverse.reactivecontexts.core.ContextState;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
 import rx.functions.Func1;
 
@@ -13,7 +14,7 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 	public OnSubscribe call(OnSubscribe t) {
 		return new ContextCapturerObservable(t);
 	}
-	
+
 	final static class ContextCapturerObservable<T> implements Observable.OnSubscribe<T> {
 
 	    final Observable.OnSubscribe<T> source;
@@ -33,7 +34,7 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 			}finally {
 				previousStates.restore();
 			}
-			
+
 		}
 
 	    static final class OnAssemblyObservableSubscriber<T> extends Subscriber<T> {
@@ -41,8 +42,8 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 	        final Subscriber<? super T> actual;
 			private final ContextState states;
 
-
 	        public OnAssemblyObservableSubscriber(Subscriber<? super T> actual, ContextState states) {
+	        	super(actual);
 	            this.actual = actual;
 	            this.states = states;
 	            actual.add(this);
@@ -77,7 +78,15 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 					previousStates.restore();
 				}
 	        }
-}
-	}
 
+            @Override
+            public void setProducer(Producer p) {
+	        	if (p.getClass().getSimpleName().startsWith("OnSubscribeConcatMap")) {
+					p.request(2);
+				} else {
+	        		super.setProducer(p);
+				}
+            }
+        }
+	}
 }
