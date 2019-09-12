@@ -13,7 +13,7 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 	public OnSubscribe call(OnSubscribe t) {
 		return new ContextCapturerObservable(t);
 	}
-	
+
 	final static class ContextCapturerObservable<T> implements Observable.OnSubscribe<T> {
 
 	    final Observable.OnSubscribe<T> source;
@@ -33,7 +33,7 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 			}finally {
 				previousStates.restore();
 			}
-			
+
 		}
 
 	    static final class OnAssemblyObservableSubscriber<T> extends Subscriber<T> {
@@ -41,8 +41,8 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 	        final Subscriber<? super T> actual;
 			private final ContextState states;
 
-
 	        public OnAssemblyObservableSubscriber(Subscriber<? super T> actual, ContextState states) {
+	        	super(actual);
 	            this.actual = actual;
 	            this.states = states;
 	            actual.add(this);
@@ -77,7 +77,6 @@ public class ContextPropagatorOnObservableCreateAction implements Func1<OnSubscr
 					previousStates.restore();
 				}
 	        }
-}
+        }
 	}
-
 }
